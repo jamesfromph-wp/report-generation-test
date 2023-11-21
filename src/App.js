@@ -1,4 +1,4 @@
-import { downloadHTMLFile } from "./utils/helpers";
+import { downloadHTMLFile, downloadPDFFile } from "./utils/helpers";
 import { PortfolioStatementTemplate } from "./utils/portfolio-statement";
 
 // HOW TO USE
@@ -17,7 +17,9 @@ function App() {
         Download Report HTML
       </button>
 
-      <button onClick={() => {}}>Download Report PDF</button>
+      <button onClick={() => downloadPDFFile(PortfolioStatementTemplate())}>
+        Download Report PDF
+      </button>
     </div>
   );
 }
