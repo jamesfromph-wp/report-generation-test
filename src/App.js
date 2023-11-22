@@ -98,10 +98,10 @@ function App() {
 
       <iframe
         id="outputFrame"
-        frameborder="0"
         style={{
           width: 750,
           height: "-webkit-fill-available",
+          border: "none",
           borderLeft: "1px solid #eee",
         }}
       />

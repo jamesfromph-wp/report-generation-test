@@ -90,7 +90,7 @@ export const PortfolioStatement = () => {
       {
         fundName: "ABC",
         units: 1,
-        NAV: 500,
+        NAV: 1,
         initialValue: 500,
         currentValue: 500,
         returnValue: 0,
@@ -99,7 +99,7 @@ export const PortfolioStatement = () => {
       {
         fundName: "XYZ",
         units: 1,
-        NAV: 500,
+        NAV: 1,
         initialValue: 500,
         currentValue: 500,
         returnValue: 0,
@@ -130,7 +130,7 @@ export const PortfolioStatement = () => {
         fundName: "ABC",
         type: "Subscription",
         units: 1,
-        NAV: 500,
+        NAV: 1,
         amount: 500,
         status: "Confirmed",
       },
@@ -139,7 +139,7 @@ export const PortfolioStatement = () => {
         fundName: "DEF",
         type: "Subscription",
         units: 1,
-        NAV: 500,
+        NAV: 1,
         amount: 500,
         status: "Pending",
       },
@@ -148,7 +148,7 @@ export const PortfolioStatement = () => {
         fundName: "XYZ",
         type: "Redemption",
         units: 1,
-        NAV: 500,
+        NAV: 1,
         amount: 500,
         status: "Confirmed",
       },
@@ -280,7 +280,7 @@ export const PortfolioStatement = () => {
         <tr>
           <td class="fw-normal px-3">${item.fundName}</td>
           <td class="fw-normal px-3">${parseValue(item.units)}</td>
-          <td class="fw-normal px-3">${parseCurrency(item.NAV)}</td>
+          <td class="fw-normal px-3">${parseValue(item.NAV)}</td>
           <td class="fw-normal px-3">${parseCurrency(item.initialValue)}</td>
           <td class="fw-normal px-3">${parseCurrency(item.currentValue)}</td>
           <td class="fw-normal px-3">${parseCurrency(item.returnValue)}</td>
@@ -348,7 +348,7 @@ export const PortfolioStatement = () => {
           <td class="fw-normal px-3">${item.fundName}</td>
           <td class="fw-normal px-3">${item.type}</td>
           <td class="fw-normal px-3">${parseValue(item.units)}</td>
-          <td class="fw-normal px-3">${parseCurrency(item.NAV)}</td>
+          <td class="fw-normal px-3">${parseValue(item.NAV)}</td>
           <td class="fw-normal px-3">${parseCurrency(item.amount)}</td>
           <td class="fw-normal px-3">${item.status}</td>
         </tr>`);
@@ -377,7 +377,7 @@ export const PortfolioStatement = () => {
       ? elements.join("\n")
       : `
       <div class="d-flex align-items-center justify-content-center px-3 py-2">
-        <span>--</span>
+        <span>—</span>
       </div>`;
   };
 
@@ -400,7 +400,7 @@ export const PortfolioStatement = () => {
       ? elements.join("\n")
       : `
       <div class="d-flex align-items-center justify-content-center px-3 py-2">
-        <span>--</span>
+        <span>—</span>
       </div>`;
   };
 
@@ -430,7 +430,7 @@ export const PortfolioStatement = () => {
       ? elements.join("\n")
       : `
       <div class="d-flex align-items-center justify-content-center px-3 py-2">
-        <span>--</span>
+        <span>—</span>
       </div>`;
   };
 

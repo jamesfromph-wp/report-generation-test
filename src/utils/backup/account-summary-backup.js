@@ -1,6 +1,25 @@
 import moment from "moment/moment";
 
-export const AccountSummary = (data, user, parameterDate, fund) => {
+export const AccountSummary = (
+  data = [
+    {
+      fund_name: "ABC",
+      matchFundNav: {
+        ending_paid_in: 0,
+        ending_market_value: 0,
+      },
+      p_net_capital: 0,
+    },
+  ],
+  user = {
+    FirstName: "Juan",
+    LastName: "Dela Cruz",
+    Email: "juandelacruz@webpuppies.com.sg",
+    MobileNo: "09123456789",
+  },
+  parameterDate = new Date(),
+  fund
+) => {
   const startDate = moment(parameterDate, "MM-DD-YYYY")
     .startOf("month")
     .format("MMMM DD, YYYY");

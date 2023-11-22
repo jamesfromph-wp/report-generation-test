@@ -1,189 +1,323 @@
 import moment from "moment/moment";
 
-export const AccountSummary = (data, user, parameterDate, fund) => {
-  const startDate = moment(parameterDate, "MM-DD-YYYY")
-    .startOf("month")
-    .format("MMMM DD, YYYY");
-  const endDate = moment(parameterDate, "MM-DD-YYYY")
-    .endOf("month")
-    .format("MMMM DD, YYYY");
+export const AccountSummary = () => {
+  // parameters
+  const portfolio = [];
+  const history = [];
+  const user = {
+    MasterInvestorCode: "0000-0000-0000",
+    FirstName: "Juan",
+    LastName: "Dela Cruz",
+  };
+  const date = new Date();
 
-  let content = ``;
-  for (let a = 0; a < data.length; a++) {
-    let fundsInvestedInTableRow = "";
-    let summaryTable = ``;
+  const dateStart = moment(date).startOf("month").format("MMMM DD, YYYY");
+  const dateEnd = moment(date).endOf("month").format("MMMM DD, YYYY");
 
-    let changeInValue =
-      parseFloat(data[a].matchFundNav.ending_market_value) -
-      parseFloat(data[a].matchFundNav.beginning_market_value);
-    let beginning_market_value = parseFloat(
-      data[a].matchFundNav.beginning_market_value
-    ).toFixed(2);
-    let ending_market_value = parseFloat(
-      data[a].matchFundNav.ending_market_value
-    ).toFixed(2);
-    let partner_additions = parseFloat(
-      data[a].matchFundNav.partner_additions
-    ).toFixed(2);
-    let partner_withdrawals = parseFloat(
-      data[a].matchFundNav.partner_withdrawals
-    ).toFixed(2);
+  // helpers
+  const parseValue = (value = 0, fallback = "-") =>
+    value === null
+      ? fallback
+      : Number(value).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
 
-    let investedTotal = parseFloat(data[a].p_deposits).toFixed(2);
+  const parseCurrency = (value = 0, currency = "PHP", fallback = "-") =>
+    value === null ? fallback : `${currency} ${parseValue(value)}`;
 
-    let returnValue =
-      parseFloat(data[a].p_net_capital) - parseFloat(data[a].p_paid_in);
-    let returnValuePercent =
-      ((parseFloat(data[a].p_net_capital) - parseFloat(data[a].p_paid_in)) /
-        parseFloat(data[a].p_paid_in)) *
-      100;
-    let returnValuePercentBracket = isNaN(returnValuePercent.toFixed(2))
-      ? ""
-      : returnValuePercent.toFixed(2);
+  const getPercentage = (value = 0, total = 100, fallback = 0) => {
+    const temp = (Number(value) / Number(total)) * 100;
+    return isNaN(temp) ? fallback : temp;
+  };
 
-    content += `    <div style="page-break-before: always; !important; style: padding-top: 40px !important"> 
+  // mappers
+  const mapFundSummary = (data = []) => {
+    return [
+      {
+        fundName: "ABC",
+        currency: "PHP",
+      },
+      {
+        fundName: "DEF",
+        currency: "PHP",
+      },
+      {
+        fundName: "XYZ",
+        currency: "PHP",
+      },
+    ];
+  };
 
-    <div class="row">
-      <div class="col-md-12 d-flex " style="border-bottom: 5px solid #f7f7f7;"> 
-        <div> 
-          <img width="120px" class="img-fluid" src="https://mbgbucket2.s3.ap-southeast-1.amazonaws.com/resources/mbgx-logo-4.png">
+  const mapAccountSummary = (data = []) => {
+    return [
+      {
+        title: "Market Value",
+        value: 1000,
+      },
+      {
+        title: "Invested Capital",
+        value: 1000,
+      },
+      {
+        title: "Gain/loss for the period",
+        value: null,
+      },
+      {
+        title: "Gain/loss since initial invested",
+        value: null,
+      },
+    ];
+  };
+
+  const mapActivitySummary = (data = []) => {
+    return [
+      {
+        activity: "Beginning Position",
+        units: 1,
+        netAssetValue: 1000,
+        marketValue: 1000,
+      },
+      {
+        activity: "Purchases",
+        units: 2,
+        netAssetValue: 1000,
+        marketValue: 1000,
+      },
+      {
+        activity: "Withdrawals",
+        units: 0,
+        netAssetValue: null,
+        marketValue: null,
+      },
+      {
+        activity: "Change in Value",
+        units: null,
+        netAssetValue: null,
+        marketValue: null,
+      },
+      {
+        activity: "Ending Position",
+        units: 2,
+        netAssetValue: 1000,
+        marketValue: 1000,
+      },
+    ];
+  };
+
+  // renderers
+  const renderFundSummary = (data = []) => {
+    const elements = [];
+
+    data.forEach((item) => {
+      elements.push(`
+        <div class="d-flex align-items-center justify-content-between px-3 py-2">
+          <span class="w-50">${item.fundName}</span>
+          <span class="w-50 text-end">${item.currency}</span>
+        </div>`);
+    });
+
+    return data.length
+      ? elements.join("\n")
+      : `
+      <div class="d-flex align-items-center justify-content-center px-3 py-2">
+        <span>—</span>
+      </div>`;
+  };
+
+  const renderAccountSummary = (data = []) => {
+    const elements = [];
+
+    // @todo: to be implemented
+    // - Gain/loss for the period calculation
+    // - Gain/loss since initial investment calculation
+
+    data.forEach((item) => {
+      elements.push(`
+        <div class="d-flex align-items-center justify-content-between px-3 py-2">
+          <span class="w-50">${item.title}</span>
+          <span class="w-50 text-end">${parseCurrency(item.value)}</span>
+        </div>`);
+    });
+
+    return data.length
+      ? elements.join("\n")
+      : `
+      <div class="d-flex align-items-center justify-content-center px-3 py-2">
+        <span>—</span>
+      </div>`;
+  };
+
+  const renderActivitySummary = (data = []) => {
+    const elements = [];
+
+    // @todo: to be implemented
+    // - Change in Value > Units calculation
+    // - Change in Value > Net Asset Value calculation
+    // - Change in Value > Market Value calculation
+
+    data.forEach((item) => {
+      elements.push(`
+        <div class="d-flex align-items-center justify-content-between px-3 py-2">
+          <span class="w-25">${item.activity}</span>
+          <span class="w-25">${parseValue(item.units, "N/A")}</span>
+          <span class="w-25 text-end">${parseCurrency(
+            item.netAssetValue,
+            "PHP",
+            "N/A"
+          )}</span>
+          <span class="w-25 text-end">${parseCurrency(item.marketValue)}</span>
+        </div>`);
+    });
+
+    return data.length
+      ? elements.join("\n")
+      : `
+      <div class="d-flex align-items-center justify-content-center px-3 py-2">
+        <span>—</span>
+      </div>`;
+  };
+
+  // components
+  const SectionHeader = (options = {}) => {
+    const {
+      title = "Investor Portfolio Statement",
+      date = new Date(),
+      logo,
+    } = options;
+
+    const dateStart = moment(date, "MM-DD-YYYY")
+      .startOf("month")
+      .format("MMMM DD, YYYY");
+
+    const dateEnd = moment(date, "MM-DD-YYYY")
+      .endOf("month")
+      .format("MMMM DD, YYYY");
+
+    const image = {
+      bucket: "https://mbgbucket2.s3.ap-southeast-1.amazonaws.com/resources/",
+      source: logo || "mbgx-logo-4.png",
+    };
+
+    return `
+      <div class="row">
+        <div class="col-md-12 d-flex section-border">
+          <div class="logo-wrapper">
+            <img width="120px" class="img-fluid" src="${image.bucket}${image.source}">
+          </div>
+
+          <div class="ms-auto">
+            <p class="fw-bold m-0">${title}</p>
+            <p class="text-secondary text-small">For ${dateStart} to ${dateEnd}</p>
+          </div>
         </div>
-        <div class="ms-auto"> 
-          <p class="m-0"><strong>Investor Portfolio Statement</strong></p>
-          <p class="text-secondary"><small>For ${startDate} to ${endDate}</small></p>
+      </div>`;
+  };
+
+  const SectionInvestor = (options = {}) => {
+    const {
+      code = "0000-0000-0000",
+      firstName = "Juan",
+      lastName = "Dela Cruz",
+    } = options;
+
+    return `
+      <div class="row mt-3">
+        <div class="wrapper d-flex flex-column">
+          <div class="d-flex align-items-center">
+            <p class="fw-bold m-0">Investor ID:</p>
+            <p class="m-0 ms-2">${code}</p>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <p class="fw-bold m-0">Investor Name:</p>
+            <p class="m-0 ms-2">${firstName} ${lastName}</p>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <div class="row mt-3"> 
-      <p class="m-0"><strong>Investor ID: </strong> ${
-        user.MasterInvestorCode
-      }</p>
-      <p><strong>Investor Name: </strong> ${user.FirstName} ${user.LastName}</p>
-    </div>
-
-    <div class="row mt-3 text-center">
-      <p class="fw-bold m-0">Investor Statement</p>
-      <p>${startDate} to ${endDate}</p> 
-    </div>
-
-    <div class="row">
-      <table class="table table-borderless">
-        <thead class="border">
-          <tr>
-            <td class="fw-bold">Fund</td>
-            <td class="fw-bold text-end">Currency</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr> 
-            <td>${data[a].fund_name}</td>
-            <td class="text-end">PHP</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="row">
-      <table class="table table-borderless">
-        <thead class="border">
-          <tr>
-            <td colspan="2" class="fw-bold text-center">Account Summary</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr> 
-            <td>Market Value</td>
-            <td class="text-end">P${ending_market_value
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-          </tr>
-          <tr> 
-            <td>Invested Capital</td>
-            <td class="text-end">P${investedTotal
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-          </tr>
-          <tr> 
-            <td>Gain/loss for the period</td>
-            <td class="text-end">P${parseFloat(returnValue)
-              .toFixed(2)
-              .toString()
-              .replace(
-                /\B(?=(\d{3})+(?!\d))/g,
-                ","
-              )}(${returnValuePercentBracket}%)</td>
-          </tr>
-          <tr> 
-            <td>Gain/loss since initial invested</td>
-            <td class="text-end">P500(+100%)</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="row">
-      <table class="table table-borderless">
-        <thead class="border">
-          <tr>
-            <td class="fw-bold">Account Activity</td>
-            <td class="fw-bold">Units</td>
-            <td class="fw-bold text-end">Net Asset Value</td>
-            <td class="fw-bold text-end">Market Value</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr> 
-            <td>Beginning Position</td>
-            <td>10</td>
-            <td class="text-end">P100.00</td>
-            <td class="text-end">P1,000.00</td>
-          </tr>
-          <tr> 
-            <td>Purchases</td>
-            <td>10</td>
-            <td class="text-end">P100.00</td>
-            <td class="text-end">P1,000.00</td>
-          </tr>
-          <tr> 
-            <td>Withdrawals</td>
-            <td>10</td>
-            <td class="text-end">P100.00</td>
-            <td class="text-end">P1,000.00</td>
-          </tr>
-          <tr> 
-            <td>Change in Value</td>
-            <td>10</td>
-            <td class="text-end">P100.00</td>
-            <td class="text-end">P1,000.00</td>
-          </tr>
-          <tr> 
-            <td>Ending Position</td>
-            <td>10</td>
-            <td class="text-end">P100.00</td>
-            <td class="text-end">P1,000.00</td>
-          </tr>
-        </tbody>
-
-      </table>
-    </div>
-  </div>`;
-  }
+      </div>`;
+  };
 
   return `
-    <!DOCTYPE html>
-<html lang="en">
-  <head>
+<!DOCTYPE html>
+<html>
+
+<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+
+  <style>
+    html {
+      -webkit-print-color-adjust: exact;
+    }
+
+    body {
+      padding: 24px;
+    }
+
+    .table-header {
+      border-bottom: 1px solid #ddd !important;
+    }
+
+    .section-wrapper {
+      background-color: #f7f7f7;
+    }
+
+    .section-border {
+      border-bottom: 5px solid #f7f7f7;
+    }
+
+    .section-border-summary {
+      border: 1px solid #ccc;
+    }
+
+    .text-small {
+      font-size: 14px;
+    }
+  </style>
 </head>
-  <body>
-  ${content}
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+<body>
+  ${SectionHeader({ date: date })}
+  ${SectionInvestor(user)}
+
+  <div class="row mt-4">
+    <div class="d-flex flex-column align-items-center">
+      <p class="fw-bold m-0">Investor Statement</p>
+      <p class="m-0">${dateStart} to ${dateEnd}</p>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="section-border-summary d-flex align-items-center justify-content-between px-3 py-2 mb-2">
+      <span class="fw-bold w-50">Fund</span>
+      <span class="fw-bold w-50 text-end">Currency</span>
+    </div>
+
+    ${renderFundSummary(mapFundSummary(portfolio))}
+  </div>
+
+  <div class="row mt-3">
+    <div class="section-border-summary d-flex align-items-center justify-content-center px-3 py-2 mb-2">
+      <span class="fw-bold">Account Summary</span>
+    </div>
+
+    ${renderAccountSummary(mapAccountSummary(portfolio))}
+  </div>
+
+  <div class="row mt-3">
+    <div class="section-border-summary d-flex align-items-center justify-content-center px-3 py-2 mb-2">
+      <span class="fw-bold w-25">Account Activity</span>
+      <span class="fw-bold w-25">Units</span>
+      <span class="fw-bold w-25 text-end">Net Asset Value</span>
+      <span class="fw-bold w-25 text-end">Market Value</span>
+    </div>
+
+    ${renderActivitySummary(mapActivitySummary(portfolio))}
+  </div>
 </body>
-</html>
-  `;
+
+</html>`;
 };
