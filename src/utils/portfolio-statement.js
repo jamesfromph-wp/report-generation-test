@@ -1,304 +1,32 @@
-import { parseInt } from "lodash";
 import moment from "moment/moment";
 
-const numberComma = (number) => {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+// default values
+const initial = {
+  porfolio: [],
+  history: [],
+  user: {
+    MasterInvestorCode: "0000-0000-0000",
+    FirstName: "Juan",
+    LastName: "Dela Cruz",
+  },
 };
 
-export const PortfolioStatementTemplate = (
-  data = [],
-  subRedData = { valueArray: [], valueMinusArray: [] },
-  user = {},
-  subscription = [],
-  redemption = [],
-  parameterDate = [],
-  statementData = [],
-  groupedByBankName = false,
-  isInvestoryStatement
-) => {
-  const fundsUnique = Array.from(
-    new Set(statementData.map((item) => item.fund_name))
-  );
+export const PortfolioStatement = () => {
+  // parameters
+  const portfolio = [];
+  const history = [];
+  const user = {
+    MasterInvestorCode: "0000-0000-0000",
+    FirstName: "Juan",
+    LastName: "Dela Cruz",
+  };
+  const date = new Date();
+  const isGroupByBank = false;
+  const isInventoryStatement = false;
 
-  let tempstatsData = [];
-  for (let a = 0; a < fundsUnique.length; a++) {
-    let p_net_profit = 0;
-    let mp_code = "";
-    let p_deposits = 0;
-    let p_net_twr = 0;
-    let fund_name = "";
-    let p_net_capital = 0;
-    let p_net_irr = 0;
-    let mp_name = "";
-    let p_code = "";
-    let p_net_srr = 0;
-    let p_net_fsrr = 0;
-    let p_name = "";
-    let p_paid_in = 0;
-    let p_withdrawals = 0;
-    let report_date = "";
-    let ending_nav = 0;
-    let ending_units = 0;
-    let partner_additions = 0;
-    let ending_market_value = 0;
-    let beginning_units = 0;
-    let beginning_paidin = 0;
-    let beginning_nav = 0;
-    let paid_in_change = 0;
-    let units_purchase = 0;
-    let ending_paid_in = 0;
-    let partner_account_name = "";
-    let investor_name = "";
-    let investor_id = "";
-    let partner_withdrawals = 0;
-    let beginning_market_value = 0;
-    let units_withdrawn = 0;
-    let logo = "";
-
-    for (let b = 0; b < statementData.length; b++) {
-      if (fundsUnique[a] == statementData[b].fund_name) {
-        p_net_profit += parseInt(statementData[b].p_net_profit);
-        mp_code = statementData[b].mp_code;
-        p_deposits += parseInt(statementData[b].p_deposits);
-        p_net_twr += parseInt(statementData[b].p_deposits);
-        fund_name = statementData[b].fund_name;
-        p_net_capital += parseInt(statementData[b].p_net_capital);
-        p_net_irr = parseInt(statementData[b].p_net_irr);
-        mp_name = statementData[b].mp_name;
-        p_code = statementData[b].p_code;
-        p_net_srr += parseInt(statementData[b].p_net_srr);
-        p_net_fsrr += parseInt(statementData[b].p_net_fsrr);
-        p_name = statementData[b].p_name;
-        p_paid_in += parseInt(statementData[b].p_paid_in);
-        p_withdrawals += parseInt(statementData[b].p_withdrawals);
-        report_date = statementData[b].report_date;
-        ending_nav = statementData[b].ending_nav;
-        ending_units = statementData[b].ending_units;
-        partner_additions = statementData[b].matchFundNav.partner_additions;
-        ending_market_value = statementData[b].matchFundNav.ending_market_value;
-        beginning_units = statementData[b].matchFundNav.beginning_units;
-        beginning_paidin = statementData[b].matchFundNav.beginning_paidin;
-        beginning_nav = statementData[b].matchFundNav.beginning_nav;
-        paid_in_change = statementData[b].matchFundNav.paid_in_change;
-        units_purchase += parseInt(
-          statementData[b].matchFundNav.units_purchase
-        );
-        ending_paid_in = statementData[b].matchFundNav.ending_paid_in;
-        partner_account_name =
-          statementData[b].matchFundNav.partner_account_name;
-        investor_name = statementData[b].matchFundNav.investor_name;
-        investor_id = statementData[b].matchFundNav.investor_id;
-        partner_withdrawals += parseInt(
-          statementData[b].matchFundNav.partner_withdrawals
-        );
-        beginning_market_value =
-          statementData[b].matchFundNav.beginning_market_value;
-        units_withdrawn += parseInt(
-          statementData[b].matchFundNav.units_withdrawn
-        );
-        logo = statementData[b].Logo;
-      }
-    }
-
-    tempstatsData.push({
-      p_net_profit: p_net_profit,
-      mp_code: mp_code,
-      p_deposits: p_deposits,
-      p_net_twr: p_net_twr,
-      fund_name: fund_name,
-      p_net_capital: p_net_capital,
-      p_net_irr: p_net_irr,
-      mp_name: mp_name,
-      p_code: p_code,
-      p_net_srr: p_net_srr,
-      p_net_fsrr: p_net_fsrr,
-      p_name: p_name,
-      p_paid_in: p_paid_in,
-      p_withdrawals: p_withdrawals,
-      report_date: report_date,
-      ending_nav: ending_nav,
-      ending_units: ending_units,
-      matchFundNav: {
-        p_net_capital: p_net_capital,
-        partner_additions: partner_additions,
-        ending_market_value: ending_market_value,
-        beginning_units: beginning_units,
-        beginning_paidin: beginning_paidin,
-        beginning_nav: beginning_nav,
-        paid_in_change: paid_in_change,
-        units_purchase: units_purchase,
-        ending_paid_in: ending_paid_in,
-        ending_units: ending_units,
-        partner_account_name: partner_account_name,
-        investor_name: investor_name,
-        investor_id: investor_id,
-        partner_withdrawals: partner_withdrawals,
-        beginning_market_value: beginning_market_value,
-        fund_name: fund_name,
-        units_withdrawn: units_withdrawn,
-        logo: logo,
-      },
-    });
-  }
-
-  statementData = tempstatsData;
-
-  const startDate = moment(parameterDate, "MM-DD-YYYY")
-    .startOf("month")
-    .format("MMMM DD, YYYY");
-  const endDate = moment(parameterDate, "MM-DD-YYYY")
-    .endOf("month")
-    .format("MMMM DD, YYYY");
-  let tableData = ``;
-  let investmentTotal = 0;
-  let currentValueTotal = 0;
-  let currentValueTotal_ = 0;
-  let returnValueTotal = 0;
-  let allocationTableRow = ``;
-
-  let totalInvestedCapital = 0;
-  let totalCurrentValue = 0;
-  let totalReturn = 0;
-  let totalPercentage = 0;
-
-  let lineChartData = subRedData?.valueArray?.map((item, i) => {
-    return item > 0 ? item : 0;
-  });
-
-  let lastLargerData = 0;
-
-  for (let counter = lineChartData.length; counter !== 0; counter--) {
-    if (lineChartData[counter - 1] !== 0) {
-      lastLargerData = lineChartData[counter - 1];
-      break;
-    }
-  }
-
-  for (let counter = lineChartData.length; counter !== 0; counter--) {
-    if (lineChartData[counter - 1] !== lastLargerData) {
-      lineChartData[counter - 1] = lastLargerData;
-    } else {
-      break;
-    }
-  }
-
-  lineChartData = JSON.stringify(lineChartData);
-
-  let lineChartDataMinus = subRedData?.valueMinusArray?.map((item, i) => {
-    return item > 0 ? item - 20 : 0;
-  });
-
-  let lastLargerDataMinus = 0;
-
-  for (let counter = lineChartDataMinus.length; counter !== 0; counter--) {
-    if (lineChartDataMinus[counter - 1] !== 0) {
-      lastLargerDataMinus = lineChartDataMinus[counter - 1];
-
-      break;
-    }
-  }
-
-  for (let counter = lineChartDataMinus.length; counter !== 0; counter--) {
-    if (lineChartDataMinus[counter - 1] !== lastLargerDataMinus) {
-      lineChartDataMinus[counter - 1] = lastLargerDataMinus;
-    } else {
-      break;
-    }
-  }
-
-  lineChartDataMinus = JSON.stringify(lineChartDataMinus);
-
-  let percentagePortfolio = [];
-
-  for (let i = 0; i < data.length; i++) {
-    let port = data[i];
-    currentValueTotal_ += parseFloat(port.p_net_capital);
-  }
-
-  for (let i = 0; i < data.length; i++) {
-    let port = data[i];
-    let percent = (port.p_net_capital / currentValueTotal_) * 100;
-    percentagePortfolio.push(isNaN(percent) ? "0" : percent.toFixed(2));
-  }
-
-  for (let bankIndex = 0; bankIndex < groupedByBankName.length; bankIndex++) {
-    for (
-      let fundIndex = 0;
-      fundIndex < groupedByBankName[bankIndex].funds.length;
-      fundIndex++
-    ) {
-      let fund = groupedByBankName[bankIndex].funds[fundIndex];
-      let currentValue = parseFloat(fund.matchFundNav.beginning_market_value);
-      totalCurrentValue += currentValue;
-    }
-  }
-
-  for (let bankIndex = 0; bankIndex < groupedByBankName.length; bankIndex++) {
-    tableData += `
-    <tr>
-      <td>
-       ${groupedByBankName[bankIndex].bankName}
-      </td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>`;
-    for (
-      let fundIndex = 0;
-      fundIndex < groupedByBankName[bankIndex].funds.length;
-      fundIndex++
-    ) {
-      let fund = groupedByBankName[bankIndex].funds[fundIndex];
-      let units = parseFloat(fund.matchFundNav.beginning_units).toFixed(2);
-
-      let nav = parseFloat(fund.nav).toFixed(2);
-
-      let investedCapital = parseFloat(
-        fund.matchFundNav.beginning_paidin
-      ).toFixed(2);
-      totalInvestedCapital += parseFloat(investedCapital);
-
-      let currentValue = parseFloat(
-        parseFloat(fund.matchFundNav.beginning_market_value).toFixed(2)
-      );
-
-      let returnValue = (currentValue - investedCapital).toFixed(2);
-      totalReturn += parseFloat(returnValue);
-
-      let returnValuePercentage = (
-        (currentValue / investedCapital - 1) *
-        100
-      ).toFixed(2);
-
-      if (returnValuePercentage === "Infinity") {
-        returnValuePercentage = 0;
-      }
-
-      tableData += `
-        <tr>
-          <td>
-          &nbsp;&nbsp;${fund.fund_name} 
-          </td>
-          <td>${numberComma(parseFloat(units).toFixed(2))}</td>
-          <td>PHP ${numberComma(parseFloat(nav).toFixed(2))}</td>
-          <td>PHP ${numberComma(investedCapital)}</td>
-          <td>PHP ${numberComma(currentValue)}</td>
-          <td>PHP ${numberComma(returnValue)}(${returnValuePercentage}%)</td>
-          <td>${((currentValue / totalCurrentValue) * 100).toFixed(2)}%</td>
-        </tr>
-      `;
-    }
-  }
-
-  totalPercentage = (totalCurrentValue / totalInvestedCapital - 1) * 100;
-
-  // PIE CHART
-  const backgroundColorAsset = [
+  const assetColors = [
     "#ffff34",
-    "#0000FF",
+    "#0000ff",
     "#FDBDF4",
     "#C0F054",
     "#F000FF",
@@ -316,500 +44,709 @@ export const PortfolioStatementTemplate = (
     "#89f5d2",
   ];
 
-  const portfolioAssetAllocationChartData = [];
-  const portfolioAssetAllocationChartBackgroundColor = [];
+  const dateStart = moment(date).startOf("month").format("MMMM DD, YYYY");
+  const dateEnd = moment(date).endOf("month").format("MMMM DD, YYYY");
 
-  for (let i = 0; i < data.length; i++) {
-    let portfolioData = data[i];
-    let currentValue = parseFloat(
-      parseFloat(portfolioData.matchFundNav.beginning_market_value).toFixed(2)
+  // helpers
+  const parseDate = (date = new Date()) => moment(date).format("MMMM DD, YYYY");
+
+  const parseValue = (value = 0, fallback = "-") =>
+    value === null
+      ? fallback
+      : Number(value).toLocaleString(undefined, {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        });
+
+  const parseCurrency = (value = 0, currency = "PHP", fallback = "-") =>
+    value === null ? fallback : `${currency} ${parseValue(value)}`;
+
+  const getPercentage = (value = 0, total = 100, fallback = 0) => {
+    const temp = (Number(value) / Number(total)) * 100;
+    return isNaN(temp) ? fallback : temp;
+  };
+
+  // mappers
+  const mapInvestmentSummary = (data = []) => {
+    return [
+      {
+        title: "Total Investment",
+        value: 1000,
+      },
+      {
+        title: "Current Value",
+        value: 1000,
+      },
+      {
+        title: "Holding Period Return",
+        value: 0,
+        percent: parseValue(getPercentage(0, 1000)),
+      },
+    ];
+  };
+
+  const mapPorfolioSummary = (data = []) => {
+    return [
+      {
+        fundName: "ABC",
+        units: 1,
+        NAV: 500,
+        initialValue: 500,
+        currentValue: 500,
+        returnValue: 0,
+        percent: 50,
+      },
+      {
+        fundName: "XYZ",
+        units: 1,
+        NAV: 500,
+        initialValue: 500,
+        currentValue: 500,
+        returnValue: 0,
+        percent: 50,
+      },
+    ];
+  };
+
+  const mapPorfolioAllocation = (data = []) => {
+    return [
+      {
+        fundName: "ABC",
+        value: 500,
+        percent: 50,
+      },
+      {
+        fundName: "XYZ",
+        value: 500,
+        percent: 50,
+      },
+    ];
+  };
+
+  const mapTransactionHistory = (data = []) => {
+    return [
+      {
+        date: new Date(),
+        fundName: "ABC",
+        type: "Subscription",
+        units: 1,
+        NAV: 500,
+        amount: 500,
+        status: "Confirmed",
+      },
+      {
+        date: new Date(),
+        fundName: "DEF",
+        type: "Subscription",
+        units: 1,
+        NAV: 500,
+        amount: 500,
+        status: "Pending",
+      },
+      {
+        date: new Date(),
+        fundName: "XYZ",
+        type: "Redemption",
+        units: 1,
+        NAV: 500,
+        amount: 500,
+        status: "Confirmed",
+      },
+    ];
+  };
+
+  const mapFundSummary = (data = []) => {
+    return [
+      {
+        fundName: "ABC",
+        currency: "PHP",
+      },
+      {
+        fundName: "DEF",
+        currency: "PHP",
+      },
+      {
+        fundName: "XYZ",
+        currency: "PHP",
+      },
+    ];
+  };
+
+  const mapAccountSummary = (data = []) => {
+    return [
+      {
+        title: "Market Value",
+        value: 1000,
+      },
+      {
+        title: "Invested Capital",
+        value: 1000,
+      },
+      {
+        title: "Gain/loss for the period",
+        value: null,
+      },
+      {
+        title: "Gain/loss since initial invested",
+        value: null,
+      },
+    ];
+  };
+
+  const mapActivitySummary = (data = []) => {
+    return [
+      {
+        activity: "Beginning Position",
+        units: 1,
+        netAssetValue: 1000,
+        marketValue: 1000,
+      },
+      {
+        activity: "Purchases",
+        units: 2,
+        netAssetValue: 1000,
+        marketValue: 1000,
+      },
+      {
+        activity: "Withdrawals",
+        units: 0,
+        netAssetValue: null,
+        marketValue: null,
+      },
+      {
+        activity: "Change in Value",
+        units: null,
+        netAssetValue: null,
+        marketValue: null,
+      },
+      {
+        activity: "Ending Position",
+        units: 2,
+        netAssetValue: 1000,
+        marketValue: 1000,
+      },
+    ];
+  };
+
+  // renderers
+  const renderTableHeader = (data = []) => {
+    const elements = [];
+
+    data.forEach((item) =>
+      elements.push(`<th class="table-header fw-bold px-3">${item}</th>`)
     );
-    let percent = (currentValue / totalCurrentValue) * 100;
 
-    portfolioAssetAllocationChartData.push(percent);
-    portfolioAssetAllocationChartBackgroundColor.push(backgroundColorAsset[i]);
+    return elements.join("\n");
+  };
 
-    allocationTableRow += `
+  const renderInvestmentSummary = (data = []) => {
+    const elements = data.map((item) => {
+      const content = item.hasOwnProperty("percent")
+        ? `${parseCurrency(item.value)} (${item.percent}%)`
+        : parseCurrency(item.value);
+
+      return `
+        <div class="col-md-4 mt-3">
+          <div class="section-wrapper d-flex flex-column justify-content-center p-3">
+            <p class="fw-bold m-0">${item.title}</p>
+            <p class="fs-2 m-0">${content}</p>
+          </div> 
+        </div>`;
+    });
+
+    return elements.join("\n");
+  };
+
+  const renderPorfolioSummary = (data = []) => {
+    const total = {
+      initialValue: 0,
+      currentValue: 0,
+      returnValue: 0,
+      percent: 0,
+
+      returnPercent: 0,
+    };
+
+    const elements = [];
+
+    data.forEach((item) => {
+      // compute values
+      total.initialValue += Number(item.initialValue);
+      total.currentValue += Number(item.currentValue);
+      total.returnValue += Number(item.returnValue);
+      total.percent += Number(item.percent);
+
+      elements.push(`
+        <tr>
+          <td class="fw-normal px-3">${item.fundName}</td>
+          <td class="fw-normal px-3">${parseValue(item.units)}</td>
+          <td class="fw-normal px-3">${parseCurrency(item.NAV)}</td>
+          <td class="fw-normal px-3">${parseCurrency(item.initialValue)}</td>
+          <td class="fw-normal px-3">${parseCurrency(item.currentValue)}</td>
+          <td class="fw-normal px-3">${parseCurrency(item.returnValue)}</td>
+          <td class="fw-normal px-3">${Number(item.percent)}%</td>
+        </tr>`);
+    });
+
+    // get total percentage of return
+    total.returnPercent = getPercentage(total.returnValue, total.initialValue);
+
+    elements.push(`
       <tr>
-        <td class="d-flex">
-          <i class="bi bi-circle-fill" style="color: ${
-            backgroundColorAsset[i]
-          }"></i> 
-          <span class="ms-2">${portfolioData.fund_name}</span></td>
-        <td>PHP ${numberComma(currentValue)}</td>
-        <td>
-        ${percent.toFixed(2)}
-        %</td>
-      </tr>
-    `;
-  }
-  allocationTableRow += `
-    <tr>
-      <td>Total value</td>
-      <td>PHP ${numberComma(totalCurrentValue.toFixed(2))}</td>
-      <td>100%</td>
-    </tr>
-  `;
+        <td class="fw-normal px-3">All</td>
+        <td class="fw-normal px-3">-</td>
+        <td class="fw-normal px-3">-</td>
+        <td class="fw-normal px-3">${parseCurrency(total.initialValue)}</td>
+        <td class="fw-normal px-3">${parseCurrency(total.currentValue)}</td>
+        <td class="fw-normal px-3">${parseCurrency(
+          total.returnValue
+        )} (${parseValue(total.returnPercent)}%)</td>
+        <td class="fw-normal px-3">${Math.round(total.percent)}%</td> 
+      </tr>`);
 
-  let grandValueTotal = parseFloat(
-    (returnValueTotal / investmentTotal) * 100
-  ).toFixed(2);
+    return elements.join("\n");
+  };
 
-  tableData += `
-    <tr>
-      <td>
-        Total
-      </td>
-      <td></td>
-      <td></td>
-      <td>PHP ${numberComma(totalInvestedCapital.toFixed(2))}</td>
-      <td>PHP ${numberComma(totalCurrentValue.toFixed(2))}</td>
-      <td>PHP ${numberComma(totalReturn.toFixed(2))}(${totalPercentage.toFixed(
-    2
-  )}%)</td>
-      <td>100%</td>
-    </tr>
-  `;
+  const renderPorfolioAllocation = (data = []) => {
+    const total = {
+      value: 0,
+      percent: 0,
+    };
 
-  let table = `
-   <table class="table table-striped "> 
-     <thead> 
-      <tr class="text-start" style="background-color: #3848a2; color: white;"> 
-        <td colspan="7"> 
-          <p><strong>Portfolio Summary</strong></p>
-        </td>
-      </tr>
-    </thead>
-    <tbody>  
+    const elements = [];
+
+    data.forEach((item) => {
+      // compute values
+      total.value += Number(item.value);
+      total.percent += Number(item.percent);
+
+      elements.push(`
+        <tr>
+          <td class="fw-normal px-3">${item.fundName}</td>
+          <td class="fw-normal px-3">${parseCurrency(item.value)}</td>
+          <td class="fw-normal px-3">${Number(item.percent)}%</td>
+        </tr>`);
+    });
+
+    elements.push(`
       <tr>
-        <td class="fw-bold">Fund</td>
-        <td class="fw-bold">Units</td>
-        <td class="fw-bold">NAV</td>
-        <td class="fw-bold">Invested Capital</td>
-        <td class="fw-bold">Current Value</td>
-        <td class="fw-bold">Return</td>
-        <td class="fw-bold">Percentage(%) of Portfolio</td>
-      </tr>
-      ${tableData}
-    </tbody>
-  </table>
-  
-`;
-  let tableAllocation = `
-   <table class="table "> 
-          <thead>
-            <tr style="background-color: #3848a2; color: white;">
-              <td colspan="3">Portfolio Asset Allocation</td>
-            </tr>
-            <tr>
-              <td class="fw-bold">Portfolio</td>
-              <td class="fw-bold">Value In ${endDate} </td>
-              <td class="fw-bold">Percent of assets</td>
-            </tr>
-            ${allocationTableRow}
-          </thead>
-        </table>
-  `;
-  let subRedTableColumns = "";
-  for (let i = 0; i < subscription.length; i++) {
-    let sub = subscription[i];
-    const { Amount, nav } = sub;
+        <td class="fw-normal px-3">Total</td>
+        <td class="fw-normal px-3">${parseCurrency(total.value)}</td>
+        <td class="fw-normal px-3">${Math.round(total.percent)}%</td>
+      </tr>`);
 
-    let units = nav
-      ? (Amount / nav.NavPerShare)
-          .toFixed(2)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      : "-";
+    return elements.join("\n");
+  };
 
-    subRedTableColumns += `
-      <tr> 
-        <td>${moment(sub.Date).format("MM/DD/YY")}</td>
-        <td class="fw-bold">${
-          sub.SubscriptionData &&
-          sub.SubscriptionData.data &&
-          sub.SubscriptionData.data.fund_identifier
-            ? sub.SubscriptionData.data.fund_identifier
-            : ""
-        }</td>
-        <td>Subsciption</td>
-        <td>${units}</td>
-        <td>${nav ? nav.NavPerShare : "-"}</td>
-        <td>PHP ${parseFloat(sub.Amount)
-          .toFixed(2)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td>${sub.Status === "S" ? "Confirmed" : "Pending"}</td>
-      </tr>
-`;
-  }
-  for (let i = 0; i < redemption.length; i++) {
-    let redemp = redemption[i];
-    const { Amount, nav } = redemp;
+  const renderTransactionHistory = (data = []) => {
+    const elements = [];
 
-    let units = nav
-      ? (Amount / nav.NavPerShare)
-          .toFixed(2)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-      : "-";
+    data.map((item) => {
+      elements.push(`
+        <tr>
+          <td class="fw-normal px-3">${parseDate(item.date)}</td>
+          <td class="fw-normal px-3">${item.fundName}</td>
+          <td class="fw-normal px-3">${item.type}</td>
+          <td class="fw-normal px-3">${parseValue(item.units)}</td>
+          <td class="fw-normal px-3">${parseCurrency(item.NAV)}</td>
+          <td class="fw-normal px-3">${parseCurrency(item.amount)}</td>
+          <td class="fw-normal px-3">${item.status}</td>
+        </tr>`);
+    });
 
-    subRedTableColumns += `
-      <tr> 
-        <td>${moment(redemp.Date).format("MM/DD/YY")}</td>
-        <td class="fw-bold">${
-          redemp.RedemptionData &&
-          redemp.RedemptionData.data &&
-          redemp.RedemptionData.data.fund_identifier
-            ? redemp.RedemptionData.data.fund_identifier
-            : ""
-        }</td>
-        <td>Redemption</td>
-        <td>${units}</td>
-        <td>${nav ? nav.NavPerShare : "-"}</td>
-        <td>PHP ${parseFloat(redemp.Amount)
-          .toFixed(2)
-          .toString()
-          .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-        <td>${redemp.Status === "S" ? "Confirmed" : "Pending"}</td>
-      </tr>
-`;
-  }
-  let subRedTable = `
-   <table class="table table-striped">
-        <thead>
-          <tr style="background-color: #3848a2; color: white;">
-            <td colspan="7"> Investment Transaction History</td>
-          </tr>
-          
-        </thead>
-        <tbody>
-          <tr> 
-            <td class="fw-bold">Date</td>
-            <td class="fw-bold">Fund</td>
-            <td class="fw-bold">Type</td>
-            <td class="fw-bold">Units</td>
-            <td class="fw-bold">NAV</td>
-            <td class="fw-bold">Amount</td>
-            <td class="fw-bold">Status</td>
-          </tr>
-          ${subRedTableColumns}
-        </tbody>
-      </table>
-`;
+    return data.length
+      ? elements.join("\n")
+      : `
+      <tr class="text-center">
+        <td colspan="7">—</td>
+      </tr>`;
+  };
 
-  let content = ``;
+  const renderFundSummary = (data = []) => {
+    const elements = [];
 
-  for (let bankIndex = 0; bankIndex < groupedByBankName.length; bankIndex++) {
-    for (
-      let fundIndex = 0;
-      fundIndex < groupedByBankName[bankIndex].funds.length;
-      fundIndex++
-    ) {
-      let fund = groupedByBankName[bankIndex].funds[fundIndex];
-      // TODO HERE FOR NEW VALUE
+    data.forEach((item) => {
+      elements.push(`
+        <div class="d-flex align-items-center justify-content-between px-3 py-2">
+          <span class="w-50">${item.fundName}</span>
+          <span class="w-50 text-end">${item.currency}</span>
+        </div>`);
+    });
 
-      let marketValue = parseFloat(
-        fund.matchFundNav.beginning_market_value
-      ).toFixed(2);
-      let investedCapital = parseFloat(
-        fund.matchFundNav.beginning_paidin
-      ).toFixed(2);
+    return data.length
+      ? elements.join("\n")
+      : `
+      <div class="d-flex align-items-center justify-content-center px-3 py-2">
+        <span>--</span>
+      </div>`;
+  };
 
-      // to be ask
-      let gainLossForThePeriod = 0;
+  const renderAccountSummary = (data = []) => {
+    const elements = [];
 
-      // to be ask
-      let gainLossSinceInitialInvested = 0;
+    // @todo: to be implemented
+    // - Gain/loss for the period calculation
+    // - Gain/loss since initial investment calculation
 
-      let beginningPosition = {
-        units: parseFloat(fund.matchFundNav.beginning_units).toFixed(2),
-        netAssetValue: parseFloat(fund.prevNav).toFixed(2),
-        marketValue: parseFloat(
-          fund.matchFundNav.beginning_market_value
-        ).toFixed(2),
-      };
+    data.forEach((item) => {
+      elements.push(`
+        <div class="d-flex align-items-center justify-content-between px-3 py-2">
+          <span class="w-50">${item.title}</span>
+          <span class="w-50 text-end">${parseCurrency(item.value)}</span>
+        </div>`);
+    });
 
-      let purchases = {
-        units: parseFloat(fund.matchFundNav.units_purchase).toFixed(2),
-        netAssetValue: "N/A",
-        marketValue: parseFloat(fund.matchFundNav.paid_in_change).toFixed(2),
-      };
+    return data.length
+      ? elements.join("\n")
+      : `
+      <div class="d-flex align-items-center justify-content-center px-3 py-2">
+        <span>--</span>
+      </div>`;
+  };
 
-      let withdrawals = {
-        units: parseFloat(fund.matchFundNav.units_withdrawn).toFixed(2) * -1,
-        netAssetValue: "N/A",
-        marketValue: parseFloat(fund.matchFundNav.partner_withdrawals).toFixed(
-          2
-        ),
-      };
+  const renderActivitySummary = (data = []) => {
+    const elements = [];
 
-      let changeInValue = {
-        units: "N/A",
-        netAssetValue: "N/A",
-        //WIP
-        marketValue: gainLossForThePeriod,
-      };
+    // @todo: to be implemented
+    // - Change in Value > Units calculation
+    // - Change in Value > Net Asset Value calculation
+    // - Change in Value > Market Value calculation
 
-      let endingPosition = {
-        units: parseFloat(fund.matchFundNav.beginning_units).toFixed(2),
-        netAssetValue: parseFloat(fund.ending_nav).toFixed(2),
-        marketValue: marketValue,
-      };
+    data.forEach((item) => {
+      elements.push(`
+        <div class="d-flex align-items-center justify-content-between px-3 py-2">
+          <span class="w-25">${item.activity}</span>
+          <span class="w-25">${parseValue(item.units, "N/A")}</span>
+          <span class="w-25 text-end">${parseCurrency(
+            item.netAssetValue,
+            "PHP",
+            "N/A"
+          )}</span>
+          <span class="w-25 text-end">${parseCurrency(item.marketValue)}</span>
+        </div>`);
+    });
 
-      const logo =
-        fund.matchFundNav.logo === ""
-          ? '<img width="120px" class="img-fluid" src="https://mbgbucket2.s3.ap-southeast-1.amazonaws.com/resources/mbgx-logo-4.png">'
-          : `<img width="120px" class="img-fluid" src="https://mbgbucket2.s3-ap-southeast-1.amazonaws.com/${fund.matchFundNav.logo}">`;
+    return data.length
+      ? elements.join("\n")
+      : `
+      <div class="d-flex align-items-center justify-content-center px-3 py-2">
+        <span>--</span>
+      </div>`;
+  };
 
-      content += `    <div style="page-break-before: always; !important; style: padding-top: 40px"> 
+  // components
+  const SectionHeader = (options = {}) => {
+    const {
+      title = "Investor Portfolio Statement",
+      date = new Date(),
+      logo,
+    } = options;
 
-    <div class="row">
-      <div class="col-md-12 d-flex " style="border-bottom: 5px solid #f7f7f7;"> 
-        <div>
-          ${logo}
+    const dateStart = moment(date, "MM-DD-YYYY")
+      .startOf("month")
+      .format("MMMM DD, YYYY");
+
+    const dateEnd = moment(date, "MM-DD-YYYY")
+      .endOf("month")
+      .format("MMMM DD, YYYY");
+
+    const image = {
+      bucket: "https://mbgbucket2.s3.ap-southeast-1.amazonaws.com/resources/",
+      source: logo || "mbgx-logo-4.png",
+    };
+
+    return `
+      <div class="row">
+        <div class="col-md-12 d-flex section-border">
+          <div class="logo-wrapper">
+            <img width="120px" class="img-fluid" src="${image.bucket}${image.source}">
+          </div>
+
+          <div class="ms-auto">
+            <p class="fw-bold m-0">${title}</p>
+            <p class="text-secondary text-small">For ${dateStart} to ${dateEnd}</p>
+          </div>
         </div>
-        <div class="ms-auto"> 
-          <p class="m-0"><strong>Investor Portfolio Statement</strong></p>
-          <p class="text-secondary"><small>For ${startDate} to ${endDate}</small></p>
+      </div>`;
+  };
+
+  const SectionInvestor = (options = {}) => {
+    const {
+      code = "0000-0000-0000",
+      firstName = "Juan",
+      lastName = "Dela Cruz",
+    } = options;
+
+    return `
+      <div class="row mt-3">
+        <div class="wrapper d-flex flex-column">
+          <div class="d-flex align-items-center">
+            <p class="fw-bold m-0">Investor ID:</p>
+            <p class="m-0 ms-2">${code}</p>
+          </div>
+
+          <div class="d-flex align-items-center">
+            <p class="fw-bold m-0">Investor Name:</p>
+            <p class="m-0 ms-2">${firstName} ${lastName}</p>
+          </div>
         </div>
-      </div>
-    </div>
-
-    <div class="row mt-3"> 
-      <p class="m-0"><strong>Investor ID: </strong> ${
-        user.MasterInvestorCode
-      }</p>
-      <p><strong>Investor Name: </strong> ${user.FirstName} ${user.LastName}</p>
-    </div>
-
-    <div class="row mt-3 text-center">
-      <p class="fw-bold m-0">Investor Statement</p>
-      <p>${startDate} to ${endDate}</p> 
-    </div>
-
-    <div class="row">
-      <table class="table table-borderless">
-        <thead class="border">
-          <tr>
-            <td class="fw-bold">Fund</td>
-            <td class="fw-bold text-end">Currency</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr> 
-            <td>${fund.fund_name}</td>
-            <td class="text-end">PHP</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="row">
-      <table class="table table-borderless">
-        <thead class="border">
-          <tr>
-            <td colspan="2" class="fw-bold text-center">Account Summary</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr> 
-            <td>Market Value</td>
-            <td class="text-end">P${numberComma(marketValue)}</td>
-          </tr>
-          <tr> 
-            <td>Invested Capital</td>
-            <td class="text-end">P${numberComma(investedCapital)}</td>
-          </tr>
-          <tr> 
-            <td>Gain/loss for the period</td>
-            <td class="text-end">TODO WIP</td>
-          </tr>
-          <tr> 
-            <td>Gain/loss since initial invested</td>
-            <td class="text-end">TODO WIP</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="row">
-      <table class="table table-borderless">
-        <thead class="border">
-          <tr>
-            <td class="fw-bold">Account Activity</td>
-            <td class="fw-bold">Units</td>
-            <td class="fw-bold text-end">Net Asset Value</td>
-            <td class="fw-bold text-end">Market Value</td>
-          </tr>
-        </thead>
-        <tbody>
-          <tr> 
-            <td>Beginning Position</td>
-            <td>${parseFloat(beginningPosition.units)
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-            <td class="text-end">P${beginningPosition.netAssetValue}</td>
-            <td class="text-end">P${numberComma(
-              beginningPosition.marketValue
-            )}</td>
-          </tr>
-          <tr> 
-            <td>Purchases</td>
-            <td>${parseFloat(purchases.units)
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-            <td class="text-end">N/A</td>
-            <td class="text-end">P${numberComma(purchases.marketValue)}</td>
-          </tr>
-          <tr> 
-            <td>Withdrawals</td>
-            <td>${parseFloat(withdrawals.units)
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-            <td class="text-end">N/A</td>
-            <td class="text-end">P${numberComma(withdrawals.marketValue)}</td>
-          </tr>
-          <tr>
-            <td>Change in Value</td>
-            <td>N/A</td>
-            <td class="text-end">N/A</td>
-            <td class="text-end">TODO WIP</td>
-          </tr>
-          <tr> 
-            <td>Ending Position</td>
-            <td>${parseFloat(endingPosition.units)
-              .toFixed(2)
-              .toString()
-              .replace(/\B(?=(\d{3})+(?!\d))/g, ",")}</td>
-            <td class="text-end">P${endingPosition.netAssetValue}</td>
-            <td class="text-end">P${numberComma(
-              endingPosition.marketValue
-            )}</td>
-          </tr>
-        </tbody>
-
-      </table>
-    </div>
-  </div>`;
-    }
-  }
+      </div>`;
+  };
 
   return `
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <style>
-      html { -webkit-print-color-adjust: exact; }
-    </style>
-  </head>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
 
-<body style='padding: 48px !important'>
-  <div> 
-    <div class="row">
-      <div class="col-md-12 d-flex " style="border-bottom: 5px solid #f7f7f7;"> 
-        <div> 
-          <img width="120px" class="img-fluid" src="https://mbgbucket2.s3.ap-southeast-1.amazonaws.com/resources/mbgx-logo-4.png">
+  <style>
+    html {
+      -webkit-print-color-adjust: exact;
+    }
+
+    body {
+      padding: 24px;
+    }
+
+    .column-header {
+      background-color: #3848a2;
+      color: white;
+    }
+
+    .table-header {
+      border-bottom: 1px solid #ddd !important;
+    }
+
+    .section-wrapper {
+      background-color: #f7f7f7;
+    }
+
+    .section-border {
+      border-bottom: 5px solid #f7f7f7;
+    }
+
+    .section-border-summary {
+      border: 1px solid #ccc;
+    }
+
+    .text-small {
+      font-size: 14px;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
+  </style>
+</head>
+
+<body>
+  ${SectionHeader({ date: date })}
+  ${SectionInvestor(user)}
+
+  <div class="row">
+    ${renderInvestmentSummary(mapInvestmentSummary(portfolio))}
+  </div>
+
+  <div class="row mt-3">
+    <span class="column-header fw-bold px-3 py-2">Portfolio Summary</span>
+
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          ${renderTableHeader([
+            "Fund",
+            "Units",
+            "NAV",
+            "Invested Capital",
+            "Current Value",
+            "Return",
+            "Percentage (%) of Portfolio",
+          ])}
+        </tr>
+      </thead>
+
+      <tbody>
+        ${renderPorfolioSummary(mapPorfolioSummary(portfolio))}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- <br> -->
+  <div class="page-break"></div>
+
+  <div class="row">
+    <div class="col-md-8">
+      <div class="row">
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+          <div class="wrapper mb-3">
+            <canvas id="assetAllocation" width="300" height="300"></canvas>
+          </div>
         </div>
-        <div class="ms-auto"> 
-          <p class="m-0"><strong>Investor Portfolio Statement</strong></p>
-          <p class="text-secondary"><small>For ${startDate} to ${endDate}</small></p>
+
+        <div class="col-md-8">
+          <div class="row mx-md-2">
+            <span class="column-header fw-bold px-3 py-2">Portfolio Asset Allocation</span>
+
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  ${renderTableHeader([
+                    "Fund",
+                    `Value In ${dateEnd}`,
+                    "Percent of assets",
+                  ])}
+                </tr>
+              </thead>
+
+              <tbody>
+                ${renderPorfolioAllocation(mapPorfolioAllocation(portfolio))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="row mt-3"> 
-      <p class="m-0"><strong>Investor ID: </strong> ${
-        user.MasterInvestorCode
-      }</p>
-      <p><strong>Investor Name: </strong> ${user.FirstName} ${user.LastName}</p>
-    </div>
+    <div class="col-md-4">
+      <div class="row">
+        <span class="column-header fw-bold px-3 py-2">Value of Investments over time</span>
 
-    <div class="row"> 
-      <div class="col-md-4 p-2 ps-0"> 
-        <div class="col-md-12 p-2" style="background-color: #f7f7f7;"> 
-          <p class="fw-bold m-0">Total Investment</p>
-          <b>PHP ${numberComma(totalInvestedCapital.toFixed(2))}</b>
+        <div class="d-flex align-items-center justify-content-center mb-3">
+          <canvas id="investmentValue" width="600" height="300" class="pt-2"></canvas>
         </div>
-      </div>
-
-      <div class="col-md-4 p-2 "> 
-        <div class="col-md-12 p-2" style="background-color: #f7f7f7;"> 
-          <p class="fw-bold m-0">Current Value</p>
-          <b>PHP ${numberComma(totalCurrentValue.toFixed(2))}</b>
-        </div>
-      </div>
-
-      <div class="col-md-4 p-2 pe-0"> 
-        <div class="col-md-12 p-2" style="background-color: #f7f7f7;"> 
-          <p class="fw-bold m-0">Holding Period Return</p>
-          <b>PHP ${numberComma(
-            totalReturn.toFixed(2)
-          )}(${totalPercentage.toFixed(2)}%)</b>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="row"> 
-      ${table}
-    </div>
-
-    <br><div style="page-break-after:always;"></div>
-
-    <div class="row">
-      <div class="col-md-6">
-        <div class="d-flex flex-row">
-          <div><canvas id="portfolioAssetAllocationChart" width="400" height="400"></canvas></div>
-          <div>${tableAllocation}</div>
-        </div>
-      </div> 
-      <div class="col-md-6">
-        <table class="table "> 
-          <thead>
-            <tr style="background-color: #3848a2; color: white;">
-              <td colspan="3">Value of Investments over time</td>
-            </tr>
-          </thead>
-        </table>
-        <canvas id="myChart" width="600" height="300"></canvas>  
       </div>
     </div>
   </div>
-  
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
 
-    const data = {
-    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
-    datasets: [
-      {
-      label: 'Deposits & Withdrawals',
-      data: ${lineChartData},
-      borderWidth: 1
-      },
-      {
-      label: 'Value of your accounts',
-      data: ${lineChartDataMinus},
-      borderWidth: 2
-      }
-    ]
+  <!-- page break -->
+  <div class="page-break"></div>
+
+  ${SectionHeader({ date: date })}
+  ${SectionInvestor(user)}
+
+  <div class="row mt-3">
+    <table class="table table-striped">
+      <span class="column-header fw-bold px-3 py-2">Investment Transaction History</span>
+
+      <thead>
+        <tr>
+          ${renderTableHeader([
+            "Date",
+            "Fund",
+            "Type",
+            "Units",
+            "NAV",
+            "Amount",
+            "Status",
+          ])}
+        </tr>
+      </thead>
+
+      <tbody>
+        ${renderTransactionHistory(mapTransactionHistory(history))}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- page break -->
+  <div class="page-break"></div>
+
+  ${SectionHeader({ date: date })}
+  ${SectionInvestor(user)}
+
+  <div class="row mt-4">
+    <div class="d-flex flex-column align-items-center">
+      <p class="fw-bold m-0">Investor Statement</p>
+      <p class="m-0">${dateStart} to ${dateEnd}</p>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="section-border-summary d-flex align-items-center justify-content-between px-3 py-2 mb-2">
+      <span class="fw-bold w-50">Fund</span>
+      <span class="fw-bold w-50 text-end">Currency</span>
+    </div>
+
+    ${renderFundSummary(mapFundSummary(portfolio))}
+  </div>
+
+  <div class="row mt-3">
+    <div class="section-border-summary d-flex align-items-center justify-content-center px-3 py-2 mb-2">
+      <span class="fw-bold">Account Summary</span>
+    </div>
+
+    ${renderAccountSummary(mapAccountSummary(portfolio))}
+  </div>
+
+  <div class="row mt-3">
+    <div class="section-border-summary d-flex align-items-center justify-content-center px-3 py-2 mb-2">
+      <span class="fw-bold w-25">Account Activity</span>
+      <span class="fw-bold w-25">Units</span>
+      <span class="fw-bold w-25 text-end">Net Asset Value</span>
+      <span class="fw-bold w-25 text-end">Market Value</span>
+    </div>
+
+    ${renderActivitySummary(mapActivitySummary(portfolio))}
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const assetAllocationData = {
+      datasets: [
+        {
+          label: 'Funds',
+          data: ${JSON.stringify(
+            mapPorfolioAllocation(portfolio).map((item) => item.value)
+          )},
+          backgroundColor: ${JSON.stringify(assetColors)},
+        },
+      ]
     };
 
-    const ctx = document.getElementById('myChart');
-    new Chart(ctx, {
+    const assetAllocation = document.getElementById('assetAllocation');
+
+    new Chart(assetAllocation, {
+      type: 'pie',
+      data: assetAllocationData,
+      options: {
+        animation: false,
+        transitions: {
+          active: {
+            animation: {
+              duration: 0
+            }
+          },
+        },
+      }
+    });
+
+    const investmentValueData = {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+      datasets: [
+        {
+          label: 'Deposits & Withdrawals',
+          data: [65, 59, 80, 81, 56, 55, 40, 60, 65, 71, 52, 43],
+          borderWidth: 1
+        },
+        {
+          label: 'Value of your accounts',
+          data: [95, 39, 70, 61, 66, 45, 50, 70, 55, 61, 42, 33],
+          borderWidth: 2
+        }
+      ]
+    };
+
+    const investmentValue = document.getElementById('investmentValue');
+
+    new Chart(investmentValue, {
       type: 'line',
-      data: data,
+      data: investmentValueData,
       options: {
         animation: false,
         animations: {
@@ -829,69 +766,8 @@ export const PortfolioStatementTemplate = (
         }
       }
     });
-
-    const portfolioAssetAllocationChartData = {
-      datasets: [
-        {
-          label: 'Funds',
-          data: ${JSON.stringify(portfolioAssetAllocationChartData)},
-          backgroundColor: ${JSON.stringify(
-            portfolioAssetAllocationChartBackgroundColor
-          )},
-        },
-      ]
-    };
-
-    const portfolioAssetAllocationChart = document.getElementById('portfolioAssetAllocationChart');
-    new Chart(portfolioAssetAllocationChart, {
-      type: 'pie',
-      data: portfolioAssetAllocationChartData,
-      options: {
-        animation: false,
-        transitions: {
-          active: {
-            animation: {
-              duration: 0
-            }
-          },
-        },
-      }
-    });
-
-    </script>
-    <br><div style="page-break-after:always;"></div>
-    <div> 
-
-    <div class="row">
-      <div class="col-md-12 d-flex " style="border-bottom: 5px solid #f7f7f7;"> 
-        <div> 
-          <img width="120px" class="img-fluid" src="https://mbgbucket2.s3.ap-southeast-1.amazonaws.com/resources/mbgx-logo-4.png">
-        </div>
-        <div class="ms-auto"> 
-          <p class="m-0"><strong>Investor Portfolio Statement</strong></p>
-          <p class="text-secondary"><small>For ${startDate} to ${endDate}</small></p>
-        </div>
-      </div>
-    </div>
-
-    <div class="row mt-3"> 
-       <p class="m-0"><strong>Investor ID: </strong> ${
-         user.MasterInvestorCode
-       }</p>
-      <p><strong>Investor Name: </strong> ${user.FirstName} ${user.LastName}</p>
-    </div>
-    
-    <div class="row mt-3">
-       ${subRedTable}
-    </div>
-  </div>
-  
-    <br><div style="page-break-after:always;"></div>
-  <div class='p-4'>
-  
-  ${content}
-  </div>
-    
+  </script>
 </body>
+
 </html>`;
 };
