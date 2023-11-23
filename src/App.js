@@ -1,6 +1,12 @@
 import html2pdf from "html2pdf.js";
 
-import { PortfolioStatement } from "./utils/portfolio-statement";
+import {
+  PortfolioStatement,
+  InvestmentInsights,
+  AccountSummary,
+  AssetsManagement,
+  MonthlyTransactions,
+} from "./utils/reports";
 
 // HOW TO USE
 // —
